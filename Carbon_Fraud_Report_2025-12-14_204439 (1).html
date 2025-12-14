@@ -1,0 +1,766 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carbon Emissions Fraud Detection Report</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f5f5;
+      padding: 20px;
+      margin: 0;
+    }
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background-color: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #d32f2f;
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+    .alert-icon {
+      text-align: center;
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+    .summary-section {
+      background-color: #fff3e0;
+      padding: 20px;
+      border-radius: 5px;
+      border-left: 4px solid #ff6f00;
+      margin-bottom: 30px;
+    }
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+    .summary-item {
+      background-color: white;
+      padding: 15px;
+      border-radius: 5px;
+      text-align: center;
+    }
+    .summary-label {
+      font-size: 12px;
+      color: #666;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+    .summary-value {
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      table-layout: fixed;
+      border: 1px solid #e0e0e0;
+    }
+    th {
+      background-color: #424242;
+      color: white;
+      padding: 12px 8px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 13px;
+      border: 1px solid #616161;
+      word-wrap: break-word;
+    }
+    td {
+      padding: 10px 8px;
+      border: 1px solid #e0e0e0;
+      font-size: 13px;
+      word-wrap: break-word;
+      vertical-align: top;
+    }
+    th:nth-child(1), td:nth-child(1) { width: 12%; }
+    th:nth-child(2), td:nth-child(2) { width: 10%; }
+    th:nth-child(3), td:nth-child(3) { width: 10%; }
+    th:nth-child(4), td:nth-child(4) { width: 7%; }
+    th:nth-child(5), td:nth-child(5) { width: 7%; }
+    th:nth-child(6), td:nth-child(6) { width: 8%; }
+    th:nth-child(7), td:nth-child(7) { width: 7%; }
+    th:nth-child(8), td:nth-child(8) { width: 7%; }
+    th:nth-child(9), td:nth-child(9) { width: 7%; }
+    th:nth-child(10), td:nth-child(10) { width: 8%; }
+    th:nth-child(11), td:nth-child(11) { width: 7%; }
+    th:nth-child(12), td:nth-child(12) { width: 10%; }
+    tr:hover {
+      background-color: #f5f5f5;
+    }
+    .risk-critical {
+      background-color: #ffebee;
+      color: #d32f2f;
+      font-weight: bold;
+      padding: 4px 8px;
+      border-radius: 3px;
+      display: inline-block;
+    }
+    .risk-high {
+      background-color: #fff3e0;
+      color: #ff6f00;
+      font-weight: bold;
+      padding: 4px 8px;
+      border-radius: 3px;
+      display: inline-block;
+    }
+    .risk-low {
+      background-color: #e8f5e9;
+      color: #4caf50;
+      font-weight: bold;
+      padding: 4px 8px;
+      border-radius: 3px;
+      display: inline-block;
+    }
+    .fraud-score {
+      font-weight: bold;
+      font-size: 16px;
+    }
+    .status-violation {
+      color: #d32f2f;
+      font-weight: bold;
+    }
+    .status-fraud {
+      color: #b71c1c;
+      font-weight: bold;
+    }
+    .status-compliant {
+      color: #4caf50;
+      font-weight: bold;
+    }
+    .footer {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #e0e0e0;
+      text-align: center;
+      color: #666;
+      font-size: 12px;
+    }
+    .mobile-cards {
+      display: none;
+    }
+    
+    /* Mobile Responsive Styles */
+    @media screen and (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+      
+      .container {
+        padding: 15px;
+      }
+      
+      h1 {
+        font-size: 20px;
+        margin-bottom: 8px;
+      }
+      
+      h2 {
+        font-size: 18px;
+      }
+      
+      .alert-icon {
+        font-size: 32px;
+        margin-bottom: 15px;
+      }
+      
+      .summary-section {
+        padding: 15px;
+        margin-bottom: 20px;
+      }
+      
+      .summary-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      
+      .summary-item {
+        padding: 12px;
+      }
+      
+      .summary-label {
+        font-size: 11px;
+      }
+      
+      .summary-value {
+        font-size: 20px;
+      }
+      
+      /* Hide table on mobile */
+      table {
+        display: none;
+      }
+      
+      /* Show mobile card layout */
+      .mobile-cards {
+        display: block;
+      }
+      
+      .mobile-card {
+        background-color: #ffffff;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      }
+      
+      .mobile-card h3 {
+        margin-top: 0;
+        margin-bottom: 10px;
+        font-size: 16px;
+        color: #333;
+      }
+      
+      .mobile-card-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 13px;
+      }
+      
+      .mobile-card-row:last-child {
+        border-bottom: none;
+      }
+      
+      .mobile-card-label {
+        font-weight: 600;
+        color: #666;
+        flex: 0 0 45%;
+      }
+      
+      .mobile-card-value {
+        flex: 0 0 55%;
+        text-align: right;
+        color: #333;
+      }
+      
+      .footer {
+        margin-top: 20px;
+        padding-top: 15px;
+        font-size: 11px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="alert-icon">🚨</div>
+    <h1>CARBON EMISSIONS FRAUD DETECTION REPORT</h1>
+    
+    <div class="summary-section">
+      <h2 style="margin-top: 0; color: #ff6f00;">Executive Summary</h2>
+      <div class="summary-grid">
+        <div class="summary-item">
+          <div class="summary-label">Total Industries</div>
+          <div class="summary-value">7</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-label">Violations Detected</div>
+          <div class="summary-value" style="color: #d32f2f;">4</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-label">Compliance Rate</div>
+          <div class="summary-value" style="color: #4caf50;">42.9%</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-label">Total Over-Emission</div>
+          <div class="summary-value" style="color: #d32f2f;">17000 tCO₂e</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-label">Critical Alerts</div>
+          <div class="summary-value" style="color: #b71c1c;">4</div>
+        </div>
+      </div>
+    </div>
+
+    <h2 style="color: #424242; margin-top: 30px;">Detailed Company Analysis</h2>
+    
+    <!-- Desktop Table View -->
+    <table>
+      <thead>
+        <tr>
+          <th>Company Name</th>
+          <th>Location</th>
+          <th>Industry Type</th>
+          <th>Fraud Score</th>
+          <th>Risk Level</th>
+          <th>Status</th>
+          <th>Claimed</th>
+          <th>Detected</th>
+          <th>Permitted</th>
+          <th>Over-Released</th>
+          <th>Discrepancy</th>
+          <th>Anomalies</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+          <tr>
+            <td><strong>Reliance Industries</strong></td>
+            <td>Jamnagar, Gujarat<br><small style="color: #666;">22.4707, 70.0577</small></td>
+            <td>Petrochemicals & Refining</td>
+            <td class="fraud-score" style="color: #d32f2f;">80%</td>
+            <td><span class="risk-critical">CRITICAL</span></td>
+            <td class="status-fraud">FRAUD_ALERT</td>
+            <td>45000 tCO₂e</td>
+            <td>52000 tCO₂e</td>
+            <td>48000 tCO₂e</td>
+            <td style="color: #d32f2f;">4000 tCO₂e</td>
+            <td style="color: #d32f2f;">13.46%</td>
+            <td><small>High discrepancy; Exceeds permit; Documents not verified</small></td>
+          </tr>
+        
+          <tr>
+            <td><strong>Adani Group</strong></td>
+            <td>Mundra, Gujarat<br><small style="color: #666;">22.8396, 69.7211</small></td>
+            <td>Power & Ports</td>
+            <td class="fraud-score" style="color: #d32f2f;">80%</td>
+            <td><span class="risk-critical">CRITICAL</span></td>
+            <td class="status-fraud">FRAUD_ALERT</td>
+            <td>38000 tCO₂e</td>
+            <td>44000 tCO₂e</td>
+            <td>40000 tCO₂e</td>
+            <td style="color: #d32f2f;">4000 tCO₂e</td>
+            <td style="color: #d32f2f;">13.64%</td>
+            <td><small>High discrepancy; Exceeds permit; Documents not verified</small></td>
+          </tr>
+        
+          <tr>
+            <td><strong>Indian Oil Corporation</strong></td>
+            <td>Panipat, Haryana<br><small style="color: #666;">29.3909, 76.9635</small></td>
+            <td>Oil Refining</td>
+            <td class="fraud-score" style="color: #4caf50;">40%</td>
+            <td><span class="risk-low">LOW</span></td>
+            <td class="status-compliant">COMPLIANT</td>
+            <td>32000 tCO₂e</td>
+            <td>35000 tCO₂e</td>
+            <td>34000 tCO₂e</td>
+            <td style="color: #d32f2f;">1000 tCO₂e</td>
+            <td style="color: #d32f2f;">8.57%</td>
+            <td><small>Exceeds permit</small></td>
+          </tr>
+        
+          <tr>
+            <td><strong>Vedanta Limited</strong></td>
+            <td>Jharsuguda, Odisha<br><small style="color: #666;">21.8533, 84.0069</small></td>
+            <td>Aluminum & Mining</td>
+            <td class="fraud-score" style="color: #d32f2f;">80%</td>
+            <td><span class="risk-critical">CRITICAL</span></td>
+            <td class="status-fraud">FRAUD_ALERT</td>
+            <td>28000 tCO₂e</td>
+            <td>36000 tCO₂e</td>
+            <td>30000 tCO₂e</td>
+            <td style="color: #d32f2f;">6000 tCO₂e</td>
+            <td style="color: #d32f2f;">22.22%</td>
+            <td><small>High discrepancy; Exceeds permit; Documents not verified</small></td>
+          </tr>
+        
+          <tr>
+            <td><strong>Tata Steel</strong></td>
+            <td>Jamshedpur, Jharkhand<br><small style="color: #666;">22.8046, 86.2029</small></td>
+            <td>Steel Manufacturing</td>
+            <td class="fraud-score" style="color: #4caf50;">40%</td>
+            <td><span class="risk-low">LOW</span></td>
+            <td class="status-compliant">COMPLIANT</td>
+            <td>25000 tCO₂e</td>
+            <td>27000 tCO₂e</td>
+            <td>26000 tCO₂e</td>
+            <td style="color: #d32f2f;">1000 tCO₂e</td>
+            <td style="color: #d32f2f;">7.41%</td>
+            <td><small>Exceeds permit</small></td>
+          </tr>
+        
+          <tr>
+            <td><strong>NTPC Ltd</strong></td>
+            <td>Vindhyachal, Madhya Pradesh<br><small style="color: #666;">24.1318, 82.6764</small></td>
+            <td>Thermal Power</td>
+            <td class="fraud-score" style="color: #d32f2f;">80%</td>
+            <td><span class="risk-critical">CRITICAL</span></td>
+            <td class="status-fraud">FRAUD_ALERT</td>
+            <td>42000 tCO₂e</td>
+            <td>48000 tCO₂e</td>
+            <td>45000 tCO₂e</td>
+            <td style="color: #d32f2f;">3000 tCO₂e</td>
+            <td style="color: #d32f2f;">12.50%</td>
+            <td><small>High discrepancy; Exceeds permit; Documents not verified</small></td>
+          </tr>
+        
+          <tr>
+            <td><strong>JSW Steel</strong></td>
+            <td>Vijayanagar, Karnataka<br><small style="color: #666;">15.1394, 76.4108</small></td>
+            <td>Steel Manufacturing</td>
+            <td class="fraud-score" style="color: #4caf50;">40%</td>
+            <td><span class="risk-low">LOW</span></td>
+            <td class="status-compliant">COMPLIANT</td>
+            <td>22000 tCO₂e</td>
+            <td>24000 tCO₂e</td>
+            <td>23000 tCO₂e</td>
+            <td style="color: #d32f2f;">1000 tCO₂e</td>
+            <td style="color: #d32f2f;">8.33%</td>
+            <td><small>Exceeds permit</small></td>
+          </tr>
+        
+      </tbody>
+    </table>
+    
+    <!-- Mobile Card View -->
+    <div class="mobile-cards">
+      
+        <div class="mobile-card" style="border-left: 4px solid #d32f2f;">
+          <h3>Reliance Industries</h3>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Location:</span>
+            <span class="mobile-card-value">Jamnagar, Gujarat</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Industry:</span>
+            <span class="mobile-card-value">Petrochemicals & Refining</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Fraud Score:</span>
+            <span class="mobile-card-value" style="color: #d32f2f; font-weight: bold;">80%</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Risk Level:</span>
+            <span class="mobile-card-value" style="color: #d32f2f; font-weight: bold;">CRITICAL</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Status:</span>
+            <span class="mobile-card-value" style="color: #b71c1c; font-weight: bold;">FRAUD_ALERT</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Claimed:</span>
+            <span class="mobile-card-value">45000 tCO₂e</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Detected:</span>
+            <span class="mobile-card-value">52000 tCO₂e</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Permitted:</span>
+            <span class="mobile-card-value">48000 tCO₂e</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Over-Released:</span>
+            <span class="mobile-card-value" style="color: #d32f2f; font-weight: bold;">4000 tCO₂e</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Discrepancy:</span>
+            <span class="mobile-card-value" style="color: #d32f2f;">13.46%</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Anomalies:</span>
+            <span class="mobile-card-value">High discrepancy; Exceeds permit; Documents not verified</span>
+          </div>
+        </div>
+      
+        <div class="mobile-card" style="border-left: 4px solid #d32f2f;">
+          <h3>Adani Group</h3>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Location:</span>
+            <span class="mobile-card-value">Mundra, Gujarat</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Industry:</span>
+            <span class="mobile-card-value">Power & Ports</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Fraud Score:</span>
+            <span class="mobile-card-value" style="color: #d32f2f; font-weight: bold;">80%</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Risk Level:</span>
+            <span class="mobile-card-value" style="color: #d32f2f; font-weight: bold;">CRITICAL</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Status:</span>
+            <span class="mobile-card-value" style="color: #b71c1c; font-weight: bold;">FRAUD_ALERT</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Claimed:</span>
+            <span class="mobile-card-value">38000 tCO₂e</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Detected:</span>
+            <span class="mobile-card-value">44000 tCO₂e</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Permitted:</span>
+            <span class="mobile-card-value">40000 tCO₂e</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Over-Released:</span>
+            <span class="mobile-card-value" style="color: #d32f2f; font-weight: bold;">4000 tCO₂e</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Discrepancy:</span>
+            <span class="mobile-card-value" style="color: #d32f2f;">13.64%</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Anomalies:</span>
+            <span class="mobile-card-value">High discrepancy; Exceeds permit; Documents not verified</span>
+          </div>
+        </div>
+      
+        <div class="mobile-card" style="border-left: 4px solid #4caf50;">
+          <h3>Indian Oil Corporation</h3>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Location:</span>
+            <span class="mobile-card-value">Panipat, Haryana</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Industry:</span>
+            <span class="mobile-card-value">Oil Refining</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Fraud Score:</span>
+            <span class="mobile-card-value" style="color: #4caf50; font-weight: bold;">40%</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Risk Level:</span>
+            <span class="mobile-card-value" style="color: #4caf50; font-weight: bold;">LOW</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Status:</span>
+            <span class="mobile-card-value" style="color: #4caf50; font-weight: bold;">COMPLIANT</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Claimed:</span>
+            <span class="mobile-card-value">32000 tCO₂e</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Detected:</span>
+            <span class="mobile-card-value">35000 tCO₂e</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Permitted:</span>
+            <span class="mobile-card-value">34000 tCO₂e</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Over-Released:</span>
+            <span class="mobile-card-value" style="color: #d32f2f; font-weight: bold;">1000 tCO₂e</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Discrepancy:</span>
+            <span class="mobile-card-value" style="color: #d32f2f;">8.57%</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Anomalies:</span>
+            <span class="mobile-card-value">Exceeds permit</span>
+          </div>
+        </div>
+      
+        <div class="mobile-card" style="border-left: 4px solid #d32f2f;">
+          <h3>Vedanta Limited</h3>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Location:</span>
+            <span class="mobile-card-value">Jharsuguda, Odisha</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Industry:</span>
+            <span class="mobile-card-value">Aluminum & Mining</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Fraud Score:</span>
+            <span class="mobile-card-value" style="color: #d32f2f; font-weight: bold;">80%</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Risk Level:</span>
+            <span class="mobile-card-value" style="color: #d32f2f; font-weight: bold;">CRITICAL</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Status:</span>
+            <span class="mobile-card-value" style="color: #b71c1c; font-weight: bold;">FRAUD_ALERT</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Claimed:</span>
+            <span class="mobile-card-value">28000 tCO₂e</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Detected:</span>
+            <span class="mobile-card-value">36000 tCO₂e</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Permitted:</span>
+            <span class="mobile-card-value">30000 tCO₂e</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Over-Released:</span>
+            <span class="mobile-card-value" style="color: #d32f2f; font-weight: bold;">6000 tCO₂e</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Discrepancy:</span>
+            <span class="mobile-card-value" style="color: #d32f2f;">22.22%</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Anomalies:</span>
+            <span class="mobile-card-value">High discrepancy; Exceeds permit; Documents not verified</span>
+          </div>
+        </div>
+      
+        <div class="mobile-card" style="border-left: 4px solid #4caf50;">
+          <h3>Tata Steel</h3>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Location:</span>
+            <span class="mobile-card-value">Jamshedpur, Jharkhand</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Industry:</span>
+            <span class="mobile-card-value">Steel Manufacturing</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Fraud Score:</span>
+            <span class="mobile-card-value" style="color: #4caf50; font-weight: bold;">40%</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Risk Level:</span>
+            <span class="mobile-card-value" style="color: #4caf50; font-weight: bold;">LOW</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Status:</span>
+            <span class="mobile-card-value" style="color: #4caf50; font-weight: bold;">COMPLIANT</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Claimed:</span>
+            <span class="mobile-card-value">25000 tCO₂e</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Detected:</span>
+            <span class="mobile-card-value">27000 tCO₂e</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Permitted:</span>
+            <span class="mobile-card-value">26000 tCO₂e</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Over-Released:</span>
+            <span class="mobile-card-value" style="color: #d32f2f; font-weight: bold;">1000 tCO₂e</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Discrepancy:</span>
+            <span class="mobile-card-value" style="color: #d32f2f;">7.41%</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Anomalies:</span>
+            <span class="mobile-card-value">Exceeds permit</span>
+          </div>
+        </div>
+      
+        <div class="mobile-card" style="border-left: 4px solid #d32f2f;">
+          <h3>NTPC Ltd</h3>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Location:</span>
+            <span class="mobile-card-value">Vindhyachal, Madhya Pradesh</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Industry:</span>
+            <span class="mobile-card-value">Thermal Power</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Fraud Score:</span>
+            <span class="mobile-card-value" style="color: #d32f2f; font-weight: bold;">80%</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Risk Level:</span>
+            <span class="mobile-card-value" style="color: #d32f2f; font-weight: bold;">CRITICAL</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Status:</span>
+            <span class="mobile-card-value" style="color: #b71c1c; font-weight: bold;">FRAUD_ALERT</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Claimed:</span>
+            <span class="mobile-card-value">42000 tCO₂e</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Detected:</span>
+            <span class="mobile-card-value">48000 tCO₂e</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Permitted:</span>
+            <span class="mobile-card-value">45000 tCO₂e</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Over-Released:</span>
+            <span class="mobile-card-value" style="color: #d32f2f; font-weight: bold;">3000 tCO₂e</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Discrepancy:</span>
+            <span class="mobile-card-value" style="color: #d32f2f;">12.50%</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Anomalies:</span>
+            <span class="mobile-card-value">High discrepancy; Exceeds permit; Documents not verified</span>
+          </div>
+        </div>
+      
+        <div class="mobile-card" style="border-left: 4px solid #4caf50;">
+          <h3>JSW Steel</h3>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Location:</span>
+            <span class="mobile-card-value">Vijayanagar, Karnataka</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Industry:</span>
+            <span class="mobile-card-value">Steel Manufacturing</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Fraud Score:</span>
+            <span class="mobile-card-value" style="color: #4caf50; font-weight: bold;">40%</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Risk Level:</span>
+            <span class="mobile-card-value" style="color: #4caf50; font-weight: bold;">LOW</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Status:</span>
+            <span class="mobile-card-value" style="color: #4caf50; font-weight: bold;">COMPLIANT</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Claimed:</span>
+            <span class="mobile-card-value">22000 tCO₂e</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Detected:</span>
+            <span class="mobile-card-value">24000 tCO₂e</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Permitted:</span>
+            <span class="mobile-card-value">23000 tCO₂e</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Over-Released:</span>
+            <span class="mobile-card-value" style="color: #d32f2f; font-weight: bold;">1000 tCO₂e</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Discrepancy:</span>
+            <span class="mobile-card-value" style="color: #d32f2f;">8.33%</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Anomalies:</span>
+            <span class="mobile-card-value">Exceeds permit</span>
+          </div>
+        </div>
+      
+    </div>
+
+    <div class="footer">
+      <p><strong>Report Generated:</strong> 2025-12-14T15:14:39.266Z</p>
+      <p>This is an automated fraud detection report. For inquiries, contact the compliance department.</p>
+    </div>
+  </div>
+</body>
+</html>
